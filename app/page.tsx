@@ -9,8 +9,14 @@ import UploadResult from "./components/UploadResult";
 import Header from "./components/Header";
 import { useDropzone } from "react-dropzone";
 import Footer from "./components/Footer";
+import { useSearchParams } from "next/navigation";
+import { getTranslations, getLanguageFromSearchParams, type Language } from "./lib/i18n";
 
 export default function FileUploader() {
+  const searchParams = useSearchParams();
+  const lang = getLanguageFromSearchParams(searchParams);
+  const t = getTranslations(lang);
+
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{

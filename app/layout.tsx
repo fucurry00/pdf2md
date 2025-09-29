@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { headers } from "next/headers";
+import { getLanguageFromSearchParams, type Language } from "./lib/i18n";
+import {
+  generateMetadataForLanguage,
+  generateStructuredDataForLanguage,
+  getLanguageCode,
+} from "./lib/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,19 +20,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "PDF to Markdown",
-  description: "PDF to Markdown",
-};
+// メタデータを動的に生成する関数
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const searchParams = new URLSearchParams(pathname.split("?")[1] || "");
+  const lang = getLanguageFromSearchParams(searchParams);
 
-export default function RootLayout({
+  return generateMetadataForLanguage(lang);
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const searchParams = new URLSearchParams(pathname.split("?")[1] || "");
+  const lang = getLanguageFromSearchParams(searchParams);
+
+  const structuredData = generateStructuredDataForLanguage(lang);
+  const langCode = getLanguageCode(lang);
+
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang={langCode} className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className={`antialiased overflow-y-hidden`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
         {children}
         <Analytics />
       </body>
