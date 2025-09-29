@@ -16,9 +16,12 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header
-      className={`py-6 px-6 flex select-none ${
-        isInitialUpload ? "justify-center" : "justify-between items-center"
-      }`}
+      className={`
+        flex select-none
+        ${isInitialUpload ? "justify-center" : "justify-between items-center"}
+        md:py-6 md:px-6
+        py-2 px-2
+      `}
     >
       {!isInitialUpload && (
         <div className="flex-1">
@@ -46,7 +49,7 @@ export default function Header({
           )}
         </div>
       )}
-      <h1 className={`text-2xl font-bold ${!isInitialUpload && "text-center"}`}>
+      <h1 className={`md:text-2xl font-bold ${!isInitialUpload && "text-center"}` }>
         {translations.title}
       </h1>
       {!isInitialUpload && <div className="flex-1" />}

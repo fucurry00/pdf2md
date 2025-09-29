@@ -18,11 +18,7 @@ type OcrResultViewProps = {
   translations: Translations;
 };
 
-export default function OcrResultView({
-  ocrResult,
-  analyzing,
-  translations,
-}: OcrResultViewProps) {
+export default function OcrResultView({ ocrResult, analyzing, translations }: OcrResultViewProps) {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -181,9 +177,7 @@ export default function OcrResultView({
             ></path>
           </svg>
           <p className="text-gray-800 font-medium">{translations.analysisInProgress}</p>
-          <p className="text-gray-600 text-sm mt-1">
-            {translations.analysisInProgressDescription}
-          </p>
+          <p className="text-gray-600 text-sm mt-1">{translations.analysisInProgressDescription}</p>
         </div>
       </div>
     );
@@ -230,72 +224,216 @@ export default function OcrResultView({
   }
 
   return (
-    <div className="rounded-lg overflow-hidden border border-gray-200 h-full flex flex-col">
+    <div className="md:rounded-lg md:overflow-hidden md:border md:border-gray-200 h-full flex flex-col">
       {/* ヘッダー部分 */}
-      <div className="bg-white border-b p-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-        {/* タイトル部分 */}
-        <div className="flex items-center space-x-2">
-          <h2 className="text-lg font-semibold">{translations.ocrResultsTitle}</h2>
+      <div className="bg-white border-b p-3 sticky top-0 z-10 shadow-sm">
+        {/* デスクトップレイアウト */}
+        <div className="hidden md:flex justify-between items-center">
+          {/* タイトル部分 */}
+          <div className="flex items-center space-x-2">
+            <h2 className="text-lg font-semibold">{translations.ocrResultsTitle}</h2>
+          </div>
+
+          {/* ページ入力フィールド */}
+          <div className="relative flex items-center">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                // フォーム送信時のロジックは残しておく（バックアップとして）
+                const pageNum = parseInt(pageInputValue);
+                if (pageNum >= 1 && pageNum <= ocrResult.pages.length) {
+                  // ページ番号は1から始まるが、インデックスは0から始まるため調整
+                  const pageIndex = pageNum - 1;
+                  const pageElement = pageRefs.current[pageIndex];
+                  if (pageElement && containerRef.current) {
+                    const containerRect = containerRef.current.getBoundingClientRect();
+                    const pageRect = pageElement.getBoundingClientRect();
+                    const relativeTop =
+                      pageRect.top - containerRect.top + containerRef.current.scrollTop;
+                    containerRef.current.scrollTo({
+                      top: relativeTop,
+                      behavior: "smooth",
+                    });
+                    setIsInputError(false);
+                  }
+                } else {
+                  setIsInputError(true);
+                  setTimeout(() => setIsInputError(false), 2000);
+                }
+                setPageInputValue(""); // 入力をクリア
+              }}
+              className="flex items-center"
+            >
+              <input
+                type="text"
+                min="1"
+                max={ocrResult.pages.length}
+                value={pageInputValue || currentPageDisplay}
+                onChange={(e) => setPageInputValue(e.target.value)}
+                onClick={(e) => {
+                  // クリック時に全選択する
+                  e.currentTarget.select();
+                }}
+                onFocus={(e) => {
+                  // フォーカス時に全選択する
+                  e.currentTarget.select();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const input = e.currentTarget;
+                    const oldBg = input.style.backgroundColor;
+                    input.style.backgroundColor = "rgba(209, 250, 229, 0.8)"; // 一時的に背景色を変更（薄い緑色）
+                    setTimeout(() => {
+                      input.style.backgroundColor = oldBg;
+                    }, 300);
+
+                    // ページ移動のロジックを直接実行
+                    const pageNum = parseInt(pageInputValue || currentPageDisplay);
+                    if (pageNum >= 1 && pageNum <= ocrResult.pages.length) {
+                      // ページ番号は1から始まるが、インデックスは0から始まるため調整
+                      const pageIndex = pageNum - 1;
+                      const pageElement = pageRefs.current[pageIndex];
+                      if (pageElement && containerRef.current) {
+                        const containerRect = containerRef.current.getBoundingClientRect();
+                        const pageRect = pageElement.getBoundingClientRect();
+                        const relativeTop =
+                          pageRect.top - containerRect.top + containerRef.current.scrollTop;
+                        containerRef.current.scrollTo({
+                          top: relativeTop,
+                          behavior: "smooth",
+                        });
+                        setIsInputError(false);
+                      }
+                    } else {
+                      setIsInputError(true);
+                      setTimeout(() => setIsInputError(false), 2000);
+                    }
+                    setPageInputValue(""); // 入力をクリア
+                  }
+                }}
+                className={`w-16 text-center text-sm px-2 py-1.5 bg-gray-50 text-gray-600 rounded-l border ${
+                  isInputError ? "border-red-300" : "border-gray-200"
+                }`}
+                aria-label={translations.enterPageNumber}
+                title={translations.enterPageNumber}
+              />
+              <span className="bg-gray-50 border border-l-0 border-gray-200 px-2 py-1.5 text-sm text-gray-600 rounded-r">
+                /{ocrResult.pages.length}
+              </span>
+            </form>
+            {isInputError && (
+              <div className="absolute -bottom-6 left-0 text-xs text-red-500 bg-white px-2 py-1 rounded shadow-sm border border-red-100">
+                {translations.enterValidPageNumber}
+              </div>
+            )}
+          </div>
+
+          {/* ダウンロードとすべてコピーボタンを右側に配置 */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleDownloadZip}
+              className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center ${
+                isDownloading ? "opacity-70 cursor-wait" : ""
+              }`}
+              disabled={isDownloading}
+              title={translations.downloadZip}
+            >
+              {isDownloading ? (
+                <svg
+                  className="animate-spin h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <div className="flex items-center">
+                  <Download className="h-5 w-5 mr-1" />
+                  <span>{translations.downloadZip}</span>
+                </div>
+              )}
+            </button>
+            <button
+              onClick={handleDownloadMarkdown}
+              className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center ${
+                isDownloading ? "opacity-70 cursor-wait" : ""
+              }`}
+              disabled={isDownloading}
+              title={translations.downloadMarkdown}
+            >
+              {isDownloading ? (
+                <svg
+                  className="animate-spin h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <div className="flex items-center">
+                  <Download className="h-5 w-5 mr-1" />
+                  <span>{translations.downloadMarkdown}</span>
+                </div>
+              )}
+            </button>
+            <button
+              onClick={copyAllMarkdown}
+              className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center`}
+              title={translations.copyAll}
+            >
+              {copyingAll ? (
+                <Check className="h-5 w-5 mr-1 text-green-500" />
+              ) : (
+                <Copy className="h-5 w-5 mr-1" />
+              )}
+              {copyingAll ? translations.copied : translations.copyAll}
+            </button>
+            {copyMessage && copyMessage.pageIndex === null && (
+              <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded animate-pulse">
+                {copyMessage.text}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* ページ入力フィールド */}
-        <div className="relative flex items-center">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              // フォーム送信時のロジックは残しておく（バックアップとして）
-              const pageNum = parseInt(pageInputValue);
-              if (pageNum >= 1 && pageNum <= ocrResult.pages.length) {
-                // ページ番号は1から始まるが、インデックスは0から始まるため調整
-                const pageIndex = pageNum - 1;
-                const pageElement = pageRefs.current[pageIndex];
-                if (pageElement && containerRef.current) {
-                  const containerRect = containerRef.current.getBoundingClientRect();
-                  const pageRect = pageElement.getBoundingClientRect();
-                  const relativeTop =
-                    pageRect.top - containerRect.top + containerRef.current.scrollTop;
-                  containerRef.current.scrollTo({
-                    top: relativeTop,
-                    behavior: "smooth",
-                  });
-                  setIsInputError(false);
-                }
-              } else {
-                setIsInputError(true);
-                setTimeout(() => setIsInputError(false), 2000);
-              }
-              setPageInputValue(""); // 入力をクリア
-            }}
-            className="flex items-center"
-          >
-            <input
-              type="text"
-              min="1"
-              max={ocrResult.pages.length}
-              value={pageInputValue || currentPageDisplay}
-              onChange={(e) => setPageInputValue(e.target.value)}
-              onClick={(e) => {
-                // クリック時に全選択する
-                e.currentTarget.select();
-              }}
-              onFocus={(e) => {
-                // フォーカス時に全選択する
-                e.currentTarget.select();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
+        {/* モバイルレイアウト */}
+        <div className="md:hidden space-y-3">
+          {/* タイトルとページ入力 */}
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">{translations.ocrResultsTitle}</h2>
+            <div className="relative flex items-center">
+              <form
+                onSubmit={(e) => {
                   e.preventDefault();
-                  const input = e.currentTarget;
-                  const oldBg = input.style.backgroundColor;
-                  input.style.backgroundColor = "rgba(209, 250, 229, 0.8)"; // 一時的に背景色を変更（薄い緑色）
-                  setTimeout(() => {
-                    input.style.backgroundColor = oldBg;
-                  }, 300);
-
-                  // ページ移動のロジックを直接実行
-                  const pageNum = parseInt(pageInputValue || currentPageDisplay);
+                  const pageNum = parseInt(pageInputValue);
                   if (pageNum >= 1 && pageNum <= ocrResult.pages.length) {
-                    // ページ番号は1から始まるが、インデックスは0から始まるため調整
                     const pageIndex = pageNum - 1;
                     const pageElement = pageRefs.current[pageIndex];
                     if (pageElement && containerRef.current) {
@@ -313,116 +451,150 @@ export default function OcrResultView({
                     setIsInputError(true);
                     setTimeout(() => setIsInputError(false), 2000);
                   }
-                  setPageInputValue(""); // 入力をクリア
-                }
-              }}
-              className={`w-16 text-center text-sm px-2 py-1.5 bg-gray-50 text-gray-600 rounded-l border ${
-                isInputError ? "border-red-300" : "border-gray-200"
-              }`}
-              aria-label={translations.enterPageNumber}
-              title={translations.enterPageNumber}
-            />
-            <span className="bg-gray-50 border border-l-0 border-gray-200 px-2 py-1.5 text-sm text-gray-600 rounded-r">
-              /{ocrResult.pages.length}
-            </span>
-          </form>
-          {isInputError && (
-            <div className="absolute -bottom-6 left-0 text-xs text-red-500 bg-white px-2 py-1 rounded shadow-sm border border-red-100">
-              {translations.enterValidPageNumber}
+                  setPageInputValue("");
+                }}
+                className="flex items-center"
+              >
+                <input
+                  type="text"
+                  min="1"
+                  max={ocrResult.pages.length}
+                  value={pageInputValue || currentPageDisplay}
+                  onChange={(e) => setPageInputValue(e.target.value)}
+                  onClick={(e) => e.currentTarget.select()}
+                  onFocus={(e) => e.currentTarget.select()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const pageNum = parseInt(pageInputValue || currentPageDisplay);
+                      if (pageNum >= 1 && pageNum <= ocrResult.pages.length) {
+                        const pageIndex = pageNum - 1;
+                        const pageElement = pageRefs.current[pageIndex];
+                        if (pageElement && containerRef.current) {
+                          const containerRect = containerRef.current.getBoundingClientRect();
+                          const pageRect = pageElement.getBoundingClientRect();
+                          const relativeTop =
+                            pageRect.top - containerRect.top + containerRef.current.scrollTop;
+                          containerRef.current.scrollTo({
+                            top: relativeTop,
+                            behavior: "smooth",
+                          });
+                          setIsInputError(false);
+                        }
+                      } else {
+                        setIsInputError(true);
+                        setTimeout(() => setIsInputError(false), 2000);
+                      }
+                      setPageInputValue("");
+                    }
+                  }}
+                  className={`w-12 text-center text-xs px-1 py-1 bg-gray-50 text-gray-600 rounded-l border ${
+                    isInputError ? "border-red-300" : "border-gray-200"
+                  }`}
+                  aria-label={translations.enterPageNumber}
+                  title={translations.enterPageNumber}
+                />
+                <span className="bg-gray-50 border border-l-0 border-gray-200 px-1 py-1 text-xs text-gray-600 rounded-r">
+                  /{ocrResult.pages.length}
+                </span>
+              </form>
+              {isInputError && (
+                <div className="absolute -bottom-6 left-0 text-xs text-red-500 bg-white px-2 py-1 rounded shadow-sm border border-red-100">
+                  {translations.enterValidPageNumber}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* ダウンロードとすべてコピーボタンを右側に配置 */}
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleDownloadZip}
-            className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center ${
-              isDownloading ? "opacity-70 cursor-wait" : ""
-            }`}
-            disabled={isDownloading}
-            title={translations.downloadZip}
-          >
-            {isDownloading ? (
-              <svg
-                className="animate-spin h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            ) : (
-              <div className="flex items-center">
-                <Download className="h-5 w-5 mr-1" />
-                <span>{translations.downloadZip}</span>
-              </div>
-            )}
-          </button>
-          <button
-            onClick={handleDownloadMarkdown}
-            className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center ${
-              isDownloading ? "opacity-70 cursor-wait" : ""
-            }`}
-            disabled={isDownloading}
-            title={translations.downloadMarkdown}
-          >
-            {isDownloading ? (
-              <svg
-                className="animate-spin h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            ) : (
-              <div className="flex items-center">
-                <Download className="h-5 w-5 mr-1" />
-                <span>{translations.downloadMarkdown}</span>
-              </div>
-            )}
-          </button>
-          <button
-            onClick={copyAllMarkdown}
-            className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center`}
-            title={translations.copyAll}
-          >
-            {copyingAll ? (
-              <Check className="h-5 w-5 mr-1 text-green-500" />
-            ) : (
-              <Copy className="h-5 w-5 mr-1" />
-            )}
-            {copyingAll ? translations.copied : translations.copyAll}
-          </button>
+          {/* ボタン群 */}
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleDownloadZip}
+              className={`text-xs px-3 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full ${
+                isDownloading ? "opacity-70 cursor-wait" : ""
+              }`}
+              disabled={isDownloading}
+              title={translations.downloadZip}
+            >
+              {isDownloading ? (
+                <svg
+                  className="animate-spin h-4 w-4 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <Download className="h-4 w-4 mr-2" />
+              )}
+              <span className="text-center leading-tight">{translations.downloadZip}</span>
+            </button>
+            <button
+              onClick={handleDownloadMarkdown}
+              className={`text-xs px-3 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full ${
+                isDownloading ? "opacity-70 cursor-wait" : ""
+              }`}
+              disabled={isDownloading}
+              title={translations.downloadMarkdown}
+            >
+              {isDownloading ? (
+                <svg
+                  className="animate-spin h-4 w-4 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <Download className="h-4 w-4 mr-2" />
+              )}
+              <span className="text-center leading-tight">{translations.downloadMarkdown}</span>
+            </button>
+            <button
+              onClick={copyAllMarkdown}
+              className={`text-xs px-3 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full`}
+              title={translations.copyAll}
+            >
+              {copyingAll ? (
+                <Check className="h-4 w-4 mr-2 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4 mr-2" />
+              )}
+              <span className="text-center leading-tight">
+                {copyingAll ? translations.copied : translations.copyAll}
+              </span>
+            </button>
+          </div>
           {copyMessage && copyMessage.pageIndex === null && (
-            <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded animate-pulse">
+            <div className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded animate-pulse text-center">
               {copyMessage.text}
-            </span>
+            </div>
           )}
         </div>
       </div>

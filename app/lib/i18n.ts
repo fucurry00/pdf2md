@@ -127,7 +127,7 @@ const enTranslations: Translations = {
   copied: "Copied",
   copyFailed: "Copy failed",
   downloadFailed: "Download failed",
-  downloadZip: "Images + MD (ZIP)",
+  downloadZip: "Images + Markdown (ZIP)",
   downloadMarkdown: "Markdown only",
 
   analysisInProgress: "Analyzing PDF. Please wait...",
@@ -193,7 +193,7 @@ const translations: Record<Language, Partial<Translations>> = {
     copied: "コピーしました",
     copyFailed: "コピーに失敗しました",
     downloadFailed: "ダウンロードに失敗しました",
-    downloadZip: "画像+MDをZIPで保存",
+    downloadZip: "画像+MarkdownをZIPで保存",
     downloadMarkdown: "Markdownのみ保存",
 
     analysisInProgress: "PDFを解析しています。しばらくお待ちください...",

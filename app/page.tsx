@@ -315,7 +315,7 @@ export default function FileUploader() {
         </div>
 
         {/* Right side: OCR results */}
-        <div className="w-full md:w-1/2 p-4 overflow-auto">
+        <div className="w-full md:w-1/2 md:p-4 p-0 overflow-auto">
           {analyzing ? (
             <div className="h-full flex flex-col items-center justify-center">
               <svg
