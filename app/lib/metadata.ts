@@ -478,7 +478,7 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
       address: false,
       telephone: false,
     },
-    metadataBase: new URL("https://pdf2md.vercel.app"),
+    metadataBase: new URL("https://pdf2md.app"),
     alternates: {
       canonical: "/",
       languages: languageAlternates,
@@ -486,7 +486,7 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
     openGraph: {
       title: meta.title,
       description: meta.description,
-      url: "https://pdf2md.vercel.app",
+      url: "https://pdf2md.app",
       siteName: "PDF2MD",
       images: [
         {
@@ -530,7 +530,7 @@ export function generateStructuredDataForLanguage(lang: Language) {
     "@type": "WebApplication",
     name: meta.structuredDataName,
     description: meta.structuredDataDescription,
-    url: "https://pdf2md.vercel.app",
+    url: "https://pdf2md.app",
     applicationCategory: "UtilityApplication",
     operatingSystem: "Web Browser",
     offers: {
