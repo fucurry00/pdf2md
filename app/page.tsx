@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { uploadPdfToVercelBlob, uploadImageToVercelBlob } from "./action/storage";
 import { processMistralOcr, processMistralImageOcr } from "./action/mistral";
 import { OCRResponse } from "@mistralai/mistralai/src/models/components/ocrresponse.js";
@@ -10,7 +10,7 @@ import Header from "./components/Header";
 import { useDropzone } from "react-dropzone";
 import Footer from "./components/Footer";
 import { useSearchParams } from "next/navigation";
-import { getTranslations, getLanguageFromSearchParams, type Language } from "./lib/i18n";
+import { getTranslations, getLanguageFromSearchParams } from "./lib/i18n";
 
 export default function FileUploader() {
   const searchParams = useSearchParams();
@@ -21,9 +21,9 @@ export default function FileUploader() {
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{
     success: boolean;
-    message: string;
     url?: string;
     fileType?: "pdf" | "image";
+    errorMessage?: string;
   } | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [ocrResult, setOcrResult] = useState<
@@ -54,16 +54,16 @@ export default function FileUploader() {
     return null;
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
       const newFile = acceptedFiles[0];
       if (!isValidFileType(newFile)) {
-        alert("Only PDF files can be uploaded");
+        alert(t.onlyPdfFiles);
         return;
       }
 
       if (!isValidFileSize(newFile)) {
-        alert("File size exceeds the 20MB limit. Please upload a smaller file.");
+        alert(t.fileSizeExceeded);
         return;
       }
 
@@ -72,7 +72,7 @@ export default function FileUploader() {
       setOcrResult(null);
       handleUpload(newFile);
     }
-  }, []);
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -86,12 +86,12 @@ export default function FileUploader() {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
       if (!isValidFileType(selectedFile)) {
-        alert("Only PDF files can be uploaded");
+        alert(t.onlyPdfFiles);
         return;
       }
 
       if (!isValidFileSize(selectedFile)) {
-        alert("File size exceeds the 20MB limit. Please upload a smaller file.");
+        alert(t.fileSizeExceeded);
         return;
       }
 
@@ -135,7 +135,6 @@ export default function FileUploader() {
 
       setUploadResult({
         success: true,
-        message: `${fileType === "pdf" ? "PDF" : "Image"} upload successful!`,
         url: publicUrl,
         fileType: fileType,
       });
@@ -148,7 +147,7 @@ export default function FileUploader() {
     } catch (error) {
       setUploadResult({
         success: false,
-        message: "Error during upload" + (error instanceof Error ? `: ${error.message}` : ""),
+        errorMessage: error instanceof Error ? error.message : undefined,
       });
     } finally {
       setUploading(false);
@@ -174,14 +173,17 @@ export default function FileUploader() {
         response = await processMistralImageOcr(urlToAnalyze, true);
       }
 
-      console.log(`${typeToAnalyze === "pdf" ? "PDF" : "Image"} analysis result:`, response);
+      console.log(`${typeToAnalyze === "pdf" ? t.pdf : t.image} analysis result:`, response);
       setOcrResult(response);
       setCurrentStep("result");
     } catch (error) {
-      console.error(`${typeToAnalyze === "pdf" ? "PDF" : "Image"} analysis error:`, error);
+      console.error(`${typeToAnalyze === "pdf" ? t.pdf : t.image} analysis error:`, error);
       setOcrResult({
         success: false,
-        error: error instanceof Error ? error.message : "Error during analysis",
+        error:
+          error instanceof Error
+            ? `${t.analysisError}: ${error.message}`
+            : t.analysisError,
       });
     } finally {
       setAnalyzing(false);
@@ -199,7 +201,7 @@ export default function FileUploader() {
   if (currentStep === "upload" && !file) {
     return (
       <div className="flex flex-col w-full h-screen">
-        <Header isInitialUpload={true} />
+        <Header isInitialUpload={true} translations={t} />
 
         <div
           {...getRootProps()}
@@ -213,12 +215,12 @@ export default function FileUploader() {
           <input {...getInputProps()} ref={fileInputRef} onChange={handleFileChange} />
           <div className="text-center space-y-4">
             <h2 className="text-xl font-semibold text-gray-700">
-              {isDragActive ? "Drop here" : "Drag & Drop PDF"}
+              {isDragActive ? t.dropHereText : t.dragDropText}
             </h2>
 
             <p className="text-gray-500 max-w-md mx-auto">
-              Drop or click to upload PDF
-              <span className="block text-xs mt-1">(JPEG, PNG supported)</span>
+              {t.dragDropSubtext}
+              <span className="block text-xs mt-1">{t.dragDropNote}</span>
             </p>
 
             <button
@@ -229,11 +231,11 @@ export default function FileUploader() {
                 fileInputRef.current?.click();
               }}
             >
-              Select File
+              {t.selectFileButton}
             </button>
           </div>
         </div>
-        <Footer />
+        <Footer translations={t} />
       </div>
     );
   }
@@ -241,7 +243,7 @@ export default function FileUploader() {
   // Upload, analysis, or result display state
   return (
     <div className="flex flex-col h-screen w-full">
-      <Header currentStep={currentStep} onReset={handleReset} />
+      <Header currentStep={currentStep} onReset={handleReset} translations={t} />
 
       {/* Main content: 2-column layout */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
@@ -251,7 +253,7 @@ export default function FileUploader() {
             <div className="h-full flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-semibold">
-                  Uploaded {uploadResult.fileType === "pdf" ? "PDF" : "Image"}
+                  {`${t.uploadedFile} (${uploadResult.fileType === "pdf" ? t.pdf : t.image})`}
                 </h2>
 
                 {/* File information */}
@@ -266,13 +268,13 @@ export default function FileUploader() {
                   <iframe
                     src={uploadResult.url}
                     className="w-full h-full border-0"
-                    title="PDF Preview"
+                    title={t.pdf}
                   ></iframe>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <img
                       src={uploadResult.url}
-                      alt="Uploaded Image"
+                      alt={t.image}
                       className="max-w-full max-h-full object-contain"
                     />
                   </div>
@@ -303,10 +305,10 @@ export default function FileUploader() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <p className="font-medium">Uploading...</p>
+                  <p className="font-medium">{t.uploading}</p>
                 </div>
               ) : (
-                <p>No File</p>
+                <p>{t.noFile}</p>
               )}
             </div>
           )}
@@ -336,18 +338,22 @@ export default function FileUploader() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Converting...</h3>
-              <p className="text-gray-500 text-center max-w-md">Converting PDF to text</p>
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t.converting}</h3>
+              <p className="text-gray-500 text-center max-w-md">{t.convertingSubtext}</p>
             </div>
           ) : ocrResult ? (
             <div className="h-full flex flex-col">
               <div className="flex-1 overflow-auto">
-                <OcrResultView ocrResult={ocrResult} analyzing={false} />
+                <OcrResultView
+                  ocrResult={ocrResult}
+                  analyzing={false}
+                  translations={t}
+                />
               </div>
             </div>
           ) : (
             <div className="h-full flex items-center justify-center text-gray-500">
-              <p>No Conversion Result</p>
+              <p>{t.noConversionResult}</p>
             </div>
           )}
         </div>
@@ -360,10 +366,11 @@ export default function FileUploader() {
             uploadResult={uploadResult}
             analyzing={analyzing}
             onAnalyze={() => handleAnalyze()}
+            translations={t}
           />
         </div>
       )}
-      <Footer />
+      <Footer translations={t} />
     </div>
   );
 }

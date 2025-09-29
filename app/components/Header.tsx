@@ -1,13 +1,19 @@
 "use client";
 
 import React from "react";
+import type { Translations } from "../lib/i18n";
 
 type HeaderProps = {
   currentStep?: "upload" | "analyze" | "result";
   isInitialUpload?: boolean;
   onReset?: () => void;
+  translations: Translations;
 };
-export default function Header({isInitialUpload = false, onReset }: HeaderProps) {
+export default function Header({
+  isInitialUpload = false,
+  onReset,
+  translations,
+}: HeaderProps) {
   return (
     <header
       className={`py-6 px-6 flex select-none ${
@@ -20,6 +26,7 @@ export default function Header({isInitialUpload = false, onReset }: HeaderProps)
             <button
               onClick={onReset}
               className="px-2 py-2 bg-white/20 hover:bg-gray-200 rounded-2xl text-sm transition-colors flex items-center gap-2"
+              aria-label={translations.backButton}
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -34,12 +41,14 @@ export default function Header({isInitialUpload = false, onReset }: HeaderProps)
               >
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
               </svg>
-              return
+              {translations.backButton}
             </button>
           )}
         </div>
       )}
-      <h1 className={`text-2xl font-bold ${!isInitialUpload && "text-center"}`}>PDF to Markdown</h1>
+      <h1 className={`text-2xl font-bold ${!isInitialUpload && "text-center"}`}>
+        {translations.title}
+      </h1>
       {!isInitialUpload && <div className="flex-1" />}
     </header>
   );

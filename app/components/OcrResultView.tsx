@@ -10,13 +10,19 @@ import "katex/dist/katex.min.css";
 import { useState, useRef, useEffect } from "react";
 import { Copy, Check, Download } from "lucide-react";
 import { downloadAsZip } from "../action/downloadHelper";
+import { formatTranslation, type Translations } from "../lib/i18n";
 
 type OcrResultViewProps = {
   ocrResult: OCRResponse | { success: false; error: string } | null;
   analyzing: boolean;
+  translations: Translations;
 };
 
-export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewProps) {
+export default function OcrResultView({
+  ocrResult,
+  analyzing,
+  translations,
+}: OcrResultViewProps) {
   const [visiblePages, setVisiblePages] = useState<number[]>([]);
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +36,8 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
   const [isInputError, setIsInputError] = useState(false);
   const [currentPageDisplay, setCurrentPageDisplay] = useState<string>("1");
   const [isDownloading, setIsDownloading] = useState(false);
+  const visiblePageLabels =
+    visiblePages.length > 0 ? visiblePages.map((p) => p + 1).join(", ") : "-";
 
   // クリップボードにコピーする関数
   const copyToClipboard = async (text: string, pageIndex?: number | null) => {
@@ -51,7 +59,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
       }
     } catch (err) {
       console.error("Copy failed:", err);
-      setCopyMessage({ text: "Copy failed", pageIndex });
+      setCopyMessage({ text: translations.copyFailed, pageIndex });
       setTimeout(() => {
         setCopyMessage(null);
       }, 3000);
@@ -64,8 +72,11 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
 
     const allMarkdown = ocrResult.pages
       .map((page) => {
-        const pageTitle = `# Page ${page.index + 1}\n\n`;
-        return pageTitle + (page.markdown || "（テキストなし）");
+        const pageTitle = `# ${formatTranslation(translations.pageIndicator, {
+          current: page.index + 1,
+          total: ocrResult.pages?.length ?? 0,
+        })}\n\n`;
+        return pageTitle + (page.markdown || translations.noTextOnPage);
       })
       .join("\n\n---\n\n");
 
@@ -82,7 +93,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
       await downloadAsZip(ocrResult, `ocr-export-${timestamp}`);
     } catch (error) {
       console.error("ZIP download failed:", error);
-      setCopyMessage({ text: "Download failed", pageIndex: null });
+      setCopyMessage({ text: translations.downloadFailed, pageIndex: null });
       setTimeout(() => {
         setCopyMessage(null);
       }, 3000);
@@ -101,7 +112,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
       await downloadAsZip(ocrResult, `ocr-markdown-${timestamp}`, true);
     } catch (error) {
       console.error("Markdown download failed:", error);
-      setCopyMessage({ text: "Download failed", pageIndex: null });
+      setCopyMessage({ text: translations.downloadFailed, pageIndex: null });
       setTimeout(() => {
         setCopyMessage(null);
       }, 3000);
@@ -169,8 +180,10 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <p className="text-gray-800 font-medium">Analyzing PDF. Please wait...</p>
-          <p className="text-gray-600 text-sm mt-1">Identifying document structure and images</p>
+          <p className="text-gray-800 font-medium">{translations.analysisInProgress}</p>
+          <p className="text-gray-600 text-sm mt-1">
+            {translations.analysisInProgressDescription}
+          </p>
         </div>
       </div>
     );
@@ -182,10 +195,10 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
   if ("error" in ocrResult) {
     return (
       <div className="p-5 bg-red-50 text-red-800 rounded-md border border-red-200">
-        <h3 className="font-bold text-lg mb-2">Analysis Error</h3>
+        <h3 className="font-bold text-lg mb-2">{translations.analysisError}</h3>
         <p className="text-red-700">{ocrResult.error}</p>
         <div className="mt-3 text-sm">
-          <p className="text-red-600">Please try another PDF or contact support for assistance.</p>
+          <p className="text-red-600">{translations.analysisErrorSuggestion}</p>
         </div>
       </div>
     );
@@ -210,7 +223,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-          <p className="text-yellow-700 font-medium">No page data found. Please try another PDF.</p>
+          <p className="text-yellow-700 font-medium">{translations.noPageData}</p>
         </div>
       </div>
     );
@@ -222,7 +235,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
       <div className="bg-white border-b p-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
         {/* タイトル部分 */}
         <div className="flex items-center space-x-2">
-          <h2 className="text-lg font-semibold">OCR Analysis Results</h2>
+          <h2 className="text-lg font-semibold">{translations.ocrResultsTitle}</h2>
         </div>
 
         {/* ページ入力フィールド */}
@@ -306,8 +319,8 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               className={`w-16 text-center text-sm px-2 py-1.5 bg-gray-50 text-gray-600 rounded-l border ${
                 isInputError ? "border-red-300" : "border-gray-200"
               }`}
-              aria-label="Enter page number"
-              title="Enter page number"
+              aria-label={translations.enterPageNumber}
+              title={translations.enterPageNumber}
             />
             <span className="bg-gray-50 border border-l-0 border-gray-200 px-2 py-1.5 text-sm text-gray-600 rounded-r">
               /{ocrResult.pages.length}
@@ -315,7 +328,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
           </form>
           {isInputError && (
             <div className="absolute -bottom-6 left-0 text-xs text-red-500 bg-white px-2 py-1 rounded shadow-sm border border-red-100">
-              Enter a valid page number
+              {translations.enterValidPageNumber}
             </div>
           )}
         </div>
@@ -328,7 +341,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               isDownloading ? "opacity-70 cursor-wait" : ""
             }`}
             disabled={isDownloading}
-            title="Download markdown and images as ZIP file"
+            title={translations.downloadZip}
           >
             {isDownloading ? (
               <svg
@@ -354,7 +367,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
             ) : (
               <div className="flex items-center">
                 <Download className="h-5 w-5 mr-1" />
-                <span>Images + MD (ZIP)</span>
+                <span>{translations.downloadZip}</span>
               </div>
             )}
           </button>
@@ -364,7 +377,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               isDownloading ? "opacity-70 cursor-wait" : ""
             }`}
             disabled={isDownloading}
-            title="Download markdown only"
+            title={translations.downloadMarkdown}
           >
             {isDownloading ? (
               <svg
@@ -390,21 +403,21 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
             ) : (
               <div className="flex items-center">
                 <Download className="h-5 w-5 mr-1" />
-                <span>MD only</span>
+                <span>{translations.downloadMarkdown}</span>
               </div>
             )}
           </button>
           <button
             onClick={copyAllMarkdown}
             className={`text-sm px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center`}
-            title="Copy markdown from all pages"
+            title={translations.copyAll}
           >
             {copyingAll ? (
               <Check className="h-5 w-5 mr-1 text-green-500" />
             ) : (
               <Copy className="h-5 w-5 mr-1" />
             )}
-            {copyingAll ? "Copied" : "Copy All"}
+            {copyingAll ? translations.copied : translations.copyAll}
           </button>
           {copyMessage && copyMessage.pageIndex === null && (
             <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded animate-pulse">
@@ -450,7 +463,10 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
                   {page.index + 1}
                 </span>
                 <h3 className="text-sm font-medium text-gray-700">
-                  Page {page.index + 1}/{ocrResult.pages.length}
+                  {formatTranslation(translations.pageIndicator, {
+                    current: page.index + 1,
+                    total: ocrResult.pages.length,
+                  })}
                 </h3>
               </div>
               <div className="flex items-center">
@@ -462,7 +478,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
                 <button
                   onClick={() => page.markdown && copyToClipboard(page.markdown, page.index)}
                   className={`text-sm px-2 py-1 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors flex items-center`}
-                  title="Copy markdown from this page"
+                  title={translations.copy}
                   disabled={!page.markdown}
                 >
                   {copyingPage === page.index ? (
@@ -470,7 +486,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
                   ) : (
                     <Copy className="h-5 w-5 mr-1" />
                   )}
-                  {copyingPage === page.index ? "Copied" : "Copy"}
+                  {copyingPage === page.index ? translations.copied : translations.copy}
                 </button>
               </div>
             </div>
@@ -591,7 +607,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
                     d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                   />
                 </svg>
-                <p>No text could be extracted from this page</p>
+                <p>{translations.noTextOnPage}</p>
               </div>
             )}
           </div>
@@ -601,8 +617,10 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
       {/* フッターナビゲーション */}
       <div className="bg-white border-t p-2 flex justify-between items-center">
         <div className="text-xs text-gray-500">
-          Showing page {visiblePages.length > 0 ? visiblePages.map((p) => p + 1).join(", ") : "-"}{" "}
-          of {ocrResult.pages.length} pages
+          {formatTranslation(translations.showingPageStatus, {
+            pages: visiblePageLabels,
+            total: ocrResult.pages.length,
+          })}
         </div>
 
         <div className="flex gap-2">
@@ -610,7 +628,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
             className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
             onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            Go to Top
+            {translations.goToTop}
           </button>
 
           <button
@@ -622,7 +640,7 @@ export default function OcrResultView({ ocrResult, analyzing }: OcrResultViewPro
               })
             }
           >
-            Go to Bottom
+            {translations.goToBottom}
           </button>
         </div>
       </div>

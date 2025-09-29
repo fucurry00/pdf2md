@@ -16,10 +16,12 @@ export interface Translations {
   // Header
   title: string;
   subtitle: string;
+  backButton: string;
 
   // Upload section
   dragDropText: string;
   dragDropSubtext: string;
+  dragDropNote: string;
   selectFileButton: string;
   dropHereText: string;
 
@@ -37,23 +39,125 @@ export interface Translations {
   pdf: string;
   image: string;
 
-  // Errors
+  // Alerts & validations
   onlyPdfFiles: string;
   fileSizeExceeded: string;
   uploadError: string;
   analysisError: string;
 
+  // Upload result
+  uploadSuccessTitle: string;
+  uploadSuccessMessagePdf: string;
+  uploadSuccessMessageImage: string;
+  uploadErrorTitle: string;
+  tryAgain: string;
+  cancel: string;
+  openPdf: string;
+  analyzeWithAI: string;
+  analyzing: string;
+
+  // OCR result actions
+  copyAll: string;
+  copy: string;
+  copied: string;
+  copyFailed: string;
+  downloadFailed: string;
+  downloadZip: string;
+  downloadMarkdown: string;
+
+  // OCR result status
+  analysisInProgress: string;
+  analysisInProgressDescription: string;
+  analysisErrorSuggestion: string;
+  noPageData: string;
+  ocrResultsTitle: string;
+  enterPageNumber: string;
+  enterValidPageNumber: string;
+  noTextOnPage: string;
+  showingPageStatus: string;
+  goToTop: string;
+  goToBottom: string;
+  pageIndicator: string;
+
   // Footer
   footerText: string;
+  footerBuiltWith: string;
+  footerSource: string;
 }
 
-export const translations: Record<Language, Translations> = {
+const enTranslations: Translations = {
+  title: "PDF to Markdown",
+  subtitle: "OCR Text Extraction Tool",
+  backButton: "Return",
+
+  dragDropText: "Drag & Drop PDF File",
+  dragDropSubtext: "Drop or click to upload PDF file",
+  dragDropNote: "(PDF only, max 20MB)",
+  selectFileButton: "Select File",
+  dropHereText: "Drop here",
+
+  uploadedFile: "Uploaded File",
+  noFile: "No File",
+  uploading: "Uploading...",
+
+  converting: "Converting...",
+  convertingSubtext: "Converting PDF to text",
+  noConversionResult: "No Conversion Result",
+
+  pdf: "PDF",
+  image: "Image",
+
+  onlyPdfFiles: "Only PDF files can be uploaded",
+  fileSizeExceeded: "File size exceeds the 20MB limit. Please upload a smaller file.",
+  uploadError: "Error during upload",
+  analysisError: "Error during analysis",
+
+  uploadSuccessTitle: "Upload Successful",
+  uploadSuccessMessagePdf: "PDF upload successful!",
+  uploadSuccessMessageImage: "Image upload successful!",
+  uploadErrorTitle: "Upload Error",
+  tryAgain: "Try Again",
+  cancel: "Cancel",
+  openPdf: "Open PDF",
+  analyzeWithAI: "Analyze with AI",
+  analyzing: "Analyzing...",
+
+  copyAll: "Copy All",
+  copy: "Copy",
+  copied: "Copied",
+  copyFailed: "Copy failed",
+  downloadFailed: "Download failed",
+  downloadZip: "Images + MD (ZIP)",
+  downloadMarkdown: "Markdown only",
+
+  analysisInProgress: "Analyzing PDF. Please wait...",
+  analysisInProgressDescription: "Identifying document structure and images",
+  analysisErrorSuggestion: "Please try another PDF or contact support for assistance.",
+  noPageData: "No page data found. Please try another PDF.",
+  ocrResultsTitle: "OCR Analysis Results",
+  enterPageNumber: "Enter page number",
+  enterValidPageNumber: "Enter a valid page number",
+  noTextOnPage: "No text could be extracted from this page",
+  showingPageStatus: "Showing page {pages} of {total} pages",
+  goToTop: "Go to Top",
+  goToBottom: "Go to Bottom",
+  pageIndicator: "Page {current}/{total}",
+
+  footerText: "© 2025 riku ogawa. All rights reserved.",
+  footerBuiltWith: "built with",
+  footerSource: "Source",
+};
+
+const translations: Record<Language, Partial<Translations>> = {
+  en: enTranslations,
   ja: {
     title: "PDF to Markdown",
     subtitle: "PDF文字起こし・OCR変換ツール",
+    backButton: "戻る",
 
     dragDropText: "PDFファイルをドラッグ&ドロップ",
     dragDropSubtext: "PDFファイルをドロップまたはクリックしてアップロード",
+    dragDropNote: "(PDFのみ・最大20MB)",
     selectFileButton: "ファイルを選択",
     dropHereText: "ここにドロップ",
 
@@ -74,34 +178,40 @@ export const translations: Record<Language, Translations> = {
     uploadError: "アップロード中にエラーが発生しました",
     analysisError: "分析中にエラーが発生しました",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
-  },
-  en: {
-    title: "PDF to Markdown",
-    subtitle: "OCR Text Extraction Tool",
+    uploadSuccessTitle: "アップロード成功",
+    uploadSuccessMessagePdf: "PDFのアップロードに成功しました！",
+    uploadSuccessMessageImage: "画像のアップロードに成功しました！",
+    uploadErrorTitle: "アップロードエラー",
+    tryAgain: "再試行",
+    cancel: "キャンセル",
+    openPdf: "PDFを開く",
+    analyzeWithAI: "AIで解析",
+    analyzing: "解析中...",
 
-    dragDropText: "Drag & Drop PDF File",
-    dragDropSubtext: "Drop or click to upload PDF file",
-    selectFileButton: "Select File",
-    dropHereText: "Drop here",
+    copyAll: "すべてコピー",
+    copy: "コピー",
+    copied: "コピーしました",
+    copyFailed: "コピーに失敗しました",
+    downloadFailed: "ダウンロードに失敗しました",
+    downloadZip: "画像+MDをZIPで保存",
+    downloadMarkdown: "Markdownのみ保存",
 
-    uploadedFile: "Uploaded File",
-    noFile: "No File",
-    uploading: "Uploading...",
+    analysisInProgress: "PDFを解析しています。しばらくお待ちください...",
+    analysisInProgressDescription: "ドキュメントの構造と画像を解析しています",
+    analysisErrorSuggestion: "別のPDFを試すか、サポートへご連絡ください。",
+    noPageData: "ページデータが見つかりません。別のPDFをお試しください。",
+    ocrResultsTitle: "OCR解析結果",
+    enterPageNumber: "ページ番号を入力",
+    enterValidPageNumber: "有効なページ番号を入力してください",
+    noTextOnPage: "このページからテキストを抽出できませんでした",
+    showingPageStatus: "表示中のページ: {pages}/{total}",
+    goToTop: "先頭へ",
+    goToBottom: "末尾へ",
+    pageIndicator: "ページ {current}/{total}",
 
-    converting: "Converting...",
-    convertingSubtext: "Converting PDF to text",
-    noConversionResult: "No Conversion Result",
-
-    pdf: "PDF",
-    image: "Image",
-
-    onlyPdfFiles: "Only PDF files can be uploaded",
-    fileSizeExceeded: "File size exceeds the 20MB limit. Please upload a smaller file.",
-    uploadError: "Error during upload",
-    analysisError: "Error during analysis",
-
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
+    footerBuiltWith: "開発協力:",
+    footerSource: "ソース",
   },
   ko: {
     title: "PDF to Markdown",
@@ -128,7 +238,7 @@ export const translations: Record<Language, Translations> = {
     uploadError: "업로드 중 오류가 발생했습니다",
     analysisError: "분석 중 오류가 발생했습니다",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   zh: {
     title: "PDF to Markdown",
@@ -155,7 +265,7 @@ export const translations: Record<Language, Translations> = {
     uploadError: "上传时发生错误",
     analysisError: "分析时发生错误",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   de: {
     title: "PDF to Markdown",
@@ -178,12 +288,11 @@ export const translations: Record<Language, Translations> = {
     image: "Bild",
 
     onlyPdfFiles: "Nur PDF-Dateien können hochgeladen werden",
-    fileSizeExceeded:
-      "Dateigröße überschreitet das 20MB-Limit. Bitte laden Sie eine kleinere Datei hoch.",
+    fileSizeExceeded: "Dateigröße überschreitet das 20MB-Limit. Bitte laden Sie eine kleinere Datei hoch.",
     uploadError: "Fehler beim Hochladen",
     analysisError: "Fehler bei der Analyse",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   fr: {
     title: "PDF to Markdown",
@@ -206,12 +315,11 @@ export const translations: Record<Language, Translations> = {
     image: "Image",
 
     onlyPdfFiles: "Seuls les fichiers PDF peuvent être téléchargés",
-    fileSizeExceeded:
-      "La taille du fichier dépasse la limite de 20MB. Veuillez télécharger un fichier plus petit.",
+    fileSizeExceeded: "La taille du fichier dépasse la limite de 20MB. Veuillez télécharger un fichier plus petit.",
     uploadError: "Erreur lors du téléchargement",
     analysisError: "Erreur lors de l'analyse",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   es: {
     title: "PDF to Markdown",
@@ -234,12 +342,11 @@ export const translations: Record<Language, Translations> = {
     image: "Imagen",
 
     onlyPdfFiles: "Solo se pueden subir archivos PDF",
-    fileSizeExceeded:
-      "El tamaño del archivo excede el límite de 20MB. Por favor, suba un archivo más pequeño.",
+    fileSizeExceeded: "El tamaño del archivo excede el límite de 20MB. Por favor, suba un archivo más pequeño.",
     uploadError: "Error durante la subida",
     analysisError: "Error durante el análisis",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   it: {
     title: "PDF to Markdown",
@@ -262,12 +369,11 @@ export const translations: Record<Language, Translations> = {
     image: "Immagine",
 
     onlyPdfFiles: "Solo i file PDF possono essere caricati",
-    fileSizeExceeded:
-      "La dimensione del file supera il limite di 20MB. Si prega di caricare un file più piccolo.",
+    fileSizeExceeded: "La dimensione del file supera il limite di 20MB. Si prega di caricare un file più piccolo.",
     uploadError: "Errore durante il caricamento",
     analysisError: "Errore durante l'analisi",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   pt: {
     title: "PDF to Markdown",
@@ -290,12 +396,11 @@ export const translations: Record<Language, Translations> = {
     image: "Imagem",
 
     onlyPdfFiles: "Apenas arquivos PDF podem ser enviados",
-    fileSizeExceeded:
-      "O tamanho do arquivo excede o limite de 20MB. Por favor, envie um arquivo menor.",
+    fileSizeExceeded: "O tamanho do arquivo excede o limite de 20MB. Por favor, envie um arquivo menor.",
     uploadError: "Erro durante o envio",
     analysisError: "Erro durante a análise",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   ru: {
     title: "PDF to Markdown",
@@ -318,12 +423,11 @@ export const translations: Record<Language, Translations> = {
     image: "Изображение",
 
     onlyPdfFiles: "Можно загружать только PDF файлы",
-    fileSizeExceeded:
-      "Размер файла превышает лимит 20MB. Пожалуйста, загрузите файл меньшего размера.",
+    fileSizeExceeded: "Размер файла превышает лимит 20MB. Пожалуйста, загрузите файл меньшего размера.",
     uploadError: "Ошибка при загрузке",
     analysisError: "Ошибка при анализе",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   ar: {
     title: "PDF to Markdown",
@@ -350,7 +454,7 @@ export const translations: Record<Language, Translations> = {
     uploadError: "خطأ أثناء الرفع",
     analysisError: "خطأ أثناء التحليل",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
   hi: {
     title: "PDF to Markdown",
@@ -377,29 +481,48 @@ export const translations: Record<Language, Translations> = {
     uploadError: "अपलोड के दौरान त्रुटि",
     analysisError: "विश्लेषण के दौरान त्रुटि",
 
-    footerText: "© 2024 PDF2MD. All rights reserved.",
+    footerText: "© 2025 riku ogawa. All rights reserved.",
   },
 };
 
+const supportedLanguages: Language[] = [
+  "ja",
+  "en",
+  "ko",
+  "zh",
+  "de",
+  "fr",
+  "es",
+  "it",
+  "pt",
+  "ru",
+  "ar",
+  "hi",
+];
+
 export function getTranslations(lang: Language): Translations {
-  return translations[lang] || translations.ja;
+  if (lang === "en") {
+    return enTranslations;
+  }
+
+  const overrides = translations[lang];
+  if (!overrides) {
+    return enTranslations;
+  }
+
+  return { ...enTranslations, ...overrides } as Translations;
 }
 
 export function getLanguageFromSearchParams(searchParams: URLSearchParams): Language {
   const lang = searchParams.get("lang");
-  const supportedLanguages: Language[] = [
-    "ja",
-    "en",
-    "ko",
-    "zh",
-    "de",
-    "fr",
-    "es",
-    "it",
-    "pt",
-    "ru",
-    "ar",
-    "hi",
-  ];
   return supportedLanguages.includes(lang as Language) ? (lang as Language) : "ja";
+}
+
+export function formatTranslation(
+  template: string,
+  params: Record<string, string | number>
+): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) =>
+    key in params ? String(params[key]) : `{${key}}`
+  );
 }

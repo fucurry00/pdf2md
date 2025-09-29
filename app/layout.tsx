@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { headers } from "next/headers";
-import { getLanguageFromSearchParams, type Language } from "./lib/i18n";
+import { getLanguageFromSearchParams } from "./lib/i18n";
 import {
   generateMetadataForLanguage,
   generateStructuredDataForLanguage,

@@ -1,18 +1,26 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import type { Translations } from "../lib/i18n";
 
 type UploadResultProps = {
   uploadResult: {
     success: boolean;
-    message: string;
     url?: string;
+    fileType?: "pdf" | "image";
+    errorMessage?: string;
   } | null;
   analyzing: boolean;
   onAnalyze: () => void;
+  translations: Translations;
 };
 
-export default function UploadResult({ uploadResult, analyzing, onAnalyze }: UploadResultProps) {
+export default function UploadResult({
+  uploadResult,
+  analyzing,
+  onAnalyze,
+  translations,
+}: UploadResultProps) {
   if (!uploadResult) return null;
 
   // エラー表示の場合
@@ -41,9 +49,14 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Upload Error</h3>
+              <h3 className="text-sm font-medium text-red-800">
+                {translations.uploadErrorTitle}
+              </h3>
               <div className="mt-1 text-sm text-red-700">
-                <p>{uploadResult.message}</p>
+                <p>
+                  {translations.uploadError}
+                  {uploadResult.errorMessage ? `: ${uploadResult.errorMessage}` : ""}
+                </p>
               </div>
               <div className="mt-3 flex space-x-2">
                 <button
@@ -65,14 +78,14 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                     />
                   </svg>
-                  Try Again
+                  {translations.tryAgain}
                 </button>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
                   className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none transition-colors"
                 >
-                  Cancel
+                  {translations.cancel}
                 </button>
               </div>
             </div>
@@ -112,9 +125,15 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
             </motion.svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-green-800">Upload Successful</h3>
+            <h3 className="text-sm font-medium text-green-800">
+              {translations.uploadSuccessTitle}
+            </h3>
             <div className="mt-1 text-sm text-green-700">
-              <p>{uploadResult.message}</p>
+              <p>
+                {uploadResult.fileType === "image"
+                  ? translations.uploadSuccessMessageImage
+                  : translations.uploadSuccessMessagePdf}
+              </p>
             </div>
             {uploadResult.url && (
               <div className="mt-3 flex flex-wrap gap-2">
@@ -138,7 +157,7 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>
-                  Open PDF
+                  {translations.openPdf}
                 </a>
 
                 <button
@@ -174,7 +193,7 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Analyzing...
+                      {translations.analyzing}
                     </>
                   ) : (
                     <>
@@ -192,7 +211,7 @@ export default function UploadResult({ uploadResult, analyzing, onAnalyze }: Upl
                           d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                         />
                       </svg>
-                      Analyze with AI
+                      {translations.analyzeWithAI}
                     </>
                   )}
                 </button>
