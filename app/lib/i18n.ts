@@ -144,7 +144,7 @@ const enTranslations: Translations = {
   pageIndicator: "Page {current}/{total}",
 
   footerText: "© 2025 riku ogawa. All rights reserved.",
-  footerBuiltWith: "built with",
+  footerBuiltWith: "powered by",
   footerSource: "Source",
 };
 
@@ -288,7 +288,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Bild",
 
     onlyPdfFiles: "Nur PDF-Dateien können hochgeladen werden",
-    fileSizeExceeded: "Dateigröße überschreitet das 20MB-Limit. Bitte laden Sie eine kleinere Datei hoch.",
+    fileSizeExceeded:
+      "Dateigröße überschreitet das 20MB-Limit. Bitte laden Sie eine kleinere Datei hoch.",
     uploadError: "Fehler beim Hochladen",
     analysisError: "Fehler bei der Analyse",
 
@@ -315,7 +316,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Image",
 
     onlyPdfFiles: "Seuls les fichiers PDF peuvent être téléchargés",
-    fileSizeExceeded: "La taille du fichier dépasse la limite de 20MB. Veuillez télécharger un fichier plus petit.",
+    fileSizeExceeded:
+      "La taille du fichier dépasse la limite de 20MB. Veuillez télécharger un fichier plus petit.",
     uploadError: "Erreur lors du téléchargement",
     analysisError: "Erreur lors de l'analyse",
 
@@ -342,7 +344,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Imagen",
 
     onlyPdfFiles: "Solo se pueden subir archivos PDF",
-    fileSizeExceeded: "El tamaño del archivo excede el límite de 20MB. Por favor, suba un archivo más pequeño.",
+    fileSizeExceeded:
+      "El tamaño del archivo excede el límite de 20MB. Por favor, suba un archivo más pequeño.",
     uploadError: "Error durante la subida",
     analysisError: "Error durante el análisis",
 
@@ -369,7 +372,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Immagine",
 
     onlyPdfFiles: "Solo i file PDF possono essere caricati",
-    fileSizeExceeded: "La dimensione del file supera il limite di 20MB. Si prega di caricare un file più piccolo.",
+    fileSizeExceeded:
+      "La dimensione del file supera il limite di 20MB. Si prega di caricare un file più piccolo.",
     uploadError: "Errore durante il caricamento",
     analysisError: "Errore durante l'analisi",
 
@@ -396,7 +400,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Imagem",
 
     onlyPdfFiles: "Apenas arquivos PDF podem ser enviados",
-    fileSizeExceeded: "O tamanho do arquivo excede o limite de 20MB. Por favor, envie um arquivo menor.",
+    fileSizeExceeded:
+      "O tamanho do arquivo excede o limite de 20MB. Por favor, envie um arquivo menor.",
     uploadError: "Erro durante o envio",
     analysisError: "Erro durante a análise",
 
@@ -423,7 +428,8 @@ const translations: Record<Language, Partial<Translations>> = {
     image: "Изображение",
 
     onlyPdfFiles: "Можно загружать только PDF файлы",
-    fileSizeExceeded: "Размер файла превышает лимит 20MB. Пожалуйста, загрузите файл меньшего размера.",
+    fileSizeExceeded:
+      "Размер файла превышает лимит 20MB. Пожалуйста, загрузите файл меньшего размера.",
     uploadError: "Ошибка при загрузке",
     analysisError: "Ошибка при анализе",
 
@@ -515,7 +521,7 @@ export function getTranslations(lang: Language): Translations {
 
 export function getLanguageFromSearchParams(searchParams: URLSearchParams): Language {
   const lang = searchParams.get("lang");
-  return supportedLanguages.includes(lang as Language) ? (lang as Language) : "ja";
+  return supportedLanguages.includes(lang as Language) ? (lang as Language) : "en";
 }
 
 export function formatTranslation(
