@@ -210,7 +210,7 @@ const translations: Record<Language, Partial<Translations>> = {
     pageIndicator: "ページ {current}/{total}",
 
     footerText: "© 2025 riku ogawa. All rights reserved.",
-    footerBuiltWith: "開発協力:",
+    footerBuiltWith: "Powered by",
     footerSource: "ソース",
   },
   ko: {
