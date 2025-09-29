@@ -6,11 +6,13 @@ interface LanguageMetadata {
   description: string;
   keywords: string[];
   locale: string;
+  hrefLang: string;
   ogImage: string;
   currency: string;
   featureList: string[];
   structuredDataName: string;
   structuredDataDescription: string;
+  canonicalPath: string;
 }
 
 export const languageMetadata: Record<Language, LanguageMetadata> = {
@@ -39,6 +41,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "テキスト編集",
     ],
     locale: "ja_JP",
+    hrefLang: "ja-JP",
     ogImage: "/og-image.png",
     currency: "JPY",
     featureList: [
@@ -54,6 +57,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - PDF文字起こし・OCR変換ツール",
     structuredDataDescription:
       "PDFファイルをマークダウン形式に変換する無料オンラインツール。OCR技術を使用した高精度な文字起こしで、PDFからテキストを抽出し、Markdown形式で出力します。",
+    canonicalPath: "/?lang=ja",
   },
   en: {
     title: "PDF to Markdown - Free Online OCR Text Extraction Tool",
@@ -78,6 +82,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "transcription",
     ],
     locale: "en_US",
+    hrefLang: "en-US",
     ogImage: "/og-image-en.png",
     currency: "USD",
     featureList: [
@@ -92,6 +97,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Free Online OCR Text Extraction Tool",
     structuredDataDescription:
       "Convert PDF files to Markdown format with our free online tool. High-precision OCR text extraction that converts PDFs to text and outputs in Markdown format.",
+    canonicalPath: "/",
   },
   ko: {
     title: "PDF to Markdown - 무료 온라인 OCR 텍스트 추출 도구",
@@ -115,6 +121,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "텍스트 편집",
     ],
     locale: "ko_KR",
+    hrefLang: "ko-KR",
     ogImage: "/og-image-ko.png",
     currency: "KRW",
     featureList: [
@@ -129,6 +136,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - 무료 온라인 OCR 텍스트 추출 도구",
     structuredDataDescription:
       "무료 온라인 도구로 PDF 파일을 마크다운 형식으로 변환하세요. 고정밀 OCR 텍스트 추출로 PDF를 텍스트로 변환하고 마크다운 형식으로 출력합니다.",
+    canonicalPath: "/?lang=ko",
   },
   zh: {
     title: "PDF to Markdown - 免费在线OCR文字识别工具",
@@ -151,6 +159,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "文本编辑",
     ],
     locale: "zh_CN",
+    hrefLang: "zh-CN",
     ogImage: "/og-image-zh.png",
     currency: "CNY",
     featureList: [
@@ -165,6 +174,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - 免费在线OCR文字识别工具",
     structuredDataDescription:
       "使用我们的免费在线工具将PDF文件转换为Markdown格式。高精度OCR文字识别，将PDF转换为文本并输出为Markdown格式。",
+    canonicalPath: "/?lang=zh",
   },
   de: {
     title: "PDF to Markdown - Kostenloses Online-OCR-Textextraktionstool",
@@ -187,6 +197,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "Textbearbeitung",
     ],
     locale: "de_DE",
+    hrefLang: "de-DE",
     ogImage: "/og-image-de.png",
     currency: "EUR",
     featureList: [
@@ -201,6 +212,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Kostenloses Online-OCR-Textextraktionstool",
     structuredDataDescription:
       "Konvertieren Sie PDF-Dateien mit unserem kostenlosen Online-Tool in das Markdown-Format. Hochpräzise OCR-Textextraktion, die PDFs in Text umwandelt und im Markdown-Format ausgibt.",
+    canonicalPath: "/?lang=de",
   },
   fr: {
     title: "PDF to Markdown - Outil gratuit d'extraction de texte OCR en ligne",
@@ -223,6 +235,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "édition de texte",
     ],
     locale: "fr_FR",
+    hrefLang: "fr-FR",
     ogImage: "/og-image-fr.png",
     currency: "EUR",
     featureList: [
@@ -237,6 +250,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Outil gratuit d'extraction de texte OCR en ligne",
     structuredDataDescription:
       "Convertissez les fichiers PDF au format Markdown avec notre outil en ligne gratuit. Extraction de texte OCR haute précision qui convertit les PDF en texte et les sort au format Markdown.",
+    canonicalPath: "/?lang=fr",
   },
   es: {
     title: "PDF to Markdown - Herramienta gratuita de extracción de texto OCR en línea",
@@ -259,6 +273,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "edición de texto",
     ],
     locale: "es_ES",
+    hrefLang: "es-ES",
     ogImage: "/og-image-es.png",
     currency: "EUR",
     featureList: [
@@ -274,6 +289,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "PDF to Markdown - Herramienta gratuita de extracción de texto OCR en línea",
     structuredDataDescription:
       "Convierte archivos PDF a formato Markdown con nuestra herramienta en línea gratuita. Extracción de texto OCR de alta precisión que convierte PDFs a texto y los exporta en formato Markdown.",
+    canonicalPath: "/?lang=es",
   },
   it: {
     title: "PDF to Markdown - Strumento gratuito di estrazione testo OCR online",
@@ -296,6 +312,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "modifica testo",
     ],
     locale: "it_IT",
+    hrefLang: "it-IT",
     ogImage: "/og-image-it.png",
     currency: "EUR",
     featureList: [
@@ -310,6 +327,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Strumento gratuito di estrazione testo OCR online",
     structuredDataDescription:
       "Converti file PDF in formato Markdown con il nostro strumento online gratuito. Estrazione testo OCR ad alta precisione che converte PDF in testo e li esporta in formato Markdown.",
+    canonicalPath: "/?lang=it",
   },
   pt: {
     title: "PDF to Markdown - Ferramenta gratuita de extração de texto OCR online",
@@ -332,6 +350,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "edição de texto",
     ],
     locale: "pt_BR",
+    hrefLang: "pt-BR",
     ogImage: "/og-image-pt.png",
     currency: "BRL",
     featureList: [
@@ -346,6 +365,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Ferramenta gratuita de extração de texto OCR online",
     structuredDataDescription:
       "Converta arquivos PDF para formato Markdown com nossa ferramenta online gratuita. Extração de texto OCR de alta precisão que converte PDFs em texto e os exporta em formato Markdown.",
+    canonicalPath: "/?lang=pt",
   },
   ru: {
     title: "PDF to Markdown - Бесплатный онлайн-инструмент извлечения текста OCR",
@@ -368,6 +388,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "редактирование текста",
     ],
     locale: "ru_RU",
+    hrefLang: "ru-RU",
     ogImage: "/og-image-ru.png",
     currency: "RUB",
     featureList: [
@@ -382,6 +403,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - Бесплатный онлайн-инструмент извлечения текста OCR",
     structuredDataDescription:
       "Конвертируйте PDF-файлы в формат Markdown с помощью нашего бесплатного онлайн-инструмента. Высокоточное извлечение текста OCR, которое преобразует PDF в текст и выводит в формате Markdown.",
+    canonicalPath: "/?lang=ru",
   },
   ar: {
     title: "PDF to Markdown - أداة مجانية لاستخراج النص OCR عبر الإنترنت",
@@ -404,6 +426,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "تحرير النص",
     ],
     locale: "ar_SA",
+    hrefLang: "ar-SA",
     ogImage: "/og-image-ar.png",
     currency: "SAR",
     featureList: [
@@ -418,6 +441,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - أداة مجانية لاستخراج النص OCR عبر الإنترنت",
     structuredDataDescription:
       "حول ملفات PDF إلى تنسيق Markdown باستخدام أداتنا المجانية عبر الإنترنت. استخراج نص OCR عالي الدقة يحول ملفات PDF إلى نص ويخرجها بتنسيق Markdown.",
+    canonicalPath: "/?lang=ar",
   },
   hi: {
     title: "PDF to Markdown - मुफ्त ऑनलाइन OCR टेक्स्ट निष्कर्षण उपकरण",
@@ -440,6 +464,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
       "टेक्स्ट संपादन",
     ],
     locale: "hi_IN",
+    hrefLang: "hi-IN",
     ogImage: "/og-image-hi.png",
     currency: "INR",
     featureList: [
@@ -454,6 +479,7 @@ export const languageMetadata: Record<Language, LanguageMetadata> = {
     structuredDataName: "PDF to Markdown - मुफ्त ऑनलाइन OCR टेक्स्ट निष्कर्षण उपकरण",
     structuredDataDescription:
       "हमारे मुफ्त ऑनलाइन उपकरण के साथ PDF फाइलों को Markdown प्रारूप में बदलें। उच्च-सटीकता OCR टेक्स्ट निष्कर्षण जो PDF को टेक्स्ट में बदलता है और Markdown प्रारूप में आउटपुट करता है।",
+    canonicalPath: "/?lang=hi",
   },
 };
 
@@ -462,9 +488,17 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
 
   const allLanguages = Object.keys(languageMetadata) as Language[];
   const languageAlternates = allLanguages.reduce((acc, langCode) => {
-    acc[langCode] = `/?lang=${langCode}`;
+    const langMeta = languageMetadata[langCode];
+    acc[langMeta.hrefLang] = new URL(langMeta.canonicalPath, "https://pdf2md.app").toString();
     return acc;
   }, {} as Record<string, string>);
+
+  languageAlternates["x-default"] = "https://pdf2md.app/";
+
+  const currentCanonical = meta.canonicalPath;
+  const openGraphAlternateLocales = allLanguages
+    .map((langCode) => languageMetadata[langCode].locale)
+    .filter((locale) => locale !== meta.locale);
 
   return {
     title: meta.title,
@@ -480,7 +514,7 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
     },
     metadataBase: new URL("https://pdf2md.app"),
     alternates: {
-      canonical: "/",
+      canonical: currentCanonical,
       languages: languageAlternates,
     },
     openGraph: {
@@ -497,6 +531,7 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
         },
       ],
       locale: meta.locale,
+      alternateLocale: openGraphAlternateLocales,
       type: "website",
     },
     twitter: {
@@ -524,6 +559,9 @@ export function generateMetadataForLanguage(lang: Language): Metadata {
 
 export function generateStructuredDataForLanguage(lang: Language) {
   const meta = languageMetadata[lang] || languageMetadata.ja;
+  const availableLanguages = (Object.keys(languageMetadata) as Language[]).map(
+    (langCode) => languageMetadata[langCode].hrefLang
+  );
 
   return {
     "@context": "https://schema.org",
@@ -533,6 +571,9 @@ export function generateStructuredDataForLanguage(lang: Language) {
     url: "https://pdf2md.app",
     applicationCategory: "UtilityApplication",
     operatingSystem: "Web Browser",
+    inLanguage: meta.hrefLang,
+    availableLanguage: availableLanguages,
+    image: meta.ogImage,
     offers: {
       "@type": "Offer",
       price: "0",
@@ -546,6 +587,19 @@ export function generateStructuredDataForLanguage(lang: Language) {
     publisher: {
       "@type": "Organization",
       name: "PDF2MD",
+    },
+    potentialAction: {
+      "@type": "UseAction",
+      name: "Convert PDF to Markdown",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `https://pdf2md.app${meta.canonicalPath}`,
+        inLanguage: meta.hrefLang,
+        actionPlatform: [
+          "https://schema.org/DesktopWebPlatform",
+          "https://schema.org/MobileWebPlatform",
+        ],
+      },
     },
   };
 }

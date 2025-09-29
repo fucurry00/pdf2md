@@ -8,6 +8,7 @@ import {
   generateMetadataForLanguage,
   generateStructuredDataForLanguage,
   getLanguageCode,
+  languageMetadata,
 } from "./lib/metadata";
 
 const geistSans = Geist({
@@ -46,6 +47,15 @@ export default async function RootLayout({
   return (
     <html lang={langCode} className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className={`antialiased overflow-y-hidden`}>
+        <link rel="alternate" hrefLang="x-default" href="https://pdf2md.app/" />
+        {Object.values(languageMetadata).map((meta) => (
+          <link
+            key={meta.hrefLang}
+            rel="alternate"
+            hrefLang={meta.hrefLang}
+            href={`https://pdf2md.app${meta.canonicalPath}`}
+          />
+        ))}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
